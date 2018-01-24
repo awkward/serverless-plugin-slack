@@ -39,7 +39,7 @@ class SlackServerlessPlugin {
   }
 
   afterDeployService() {
-    const message = this.serverless.service.custom.slack.function_deploy_message ||
+    const message = this.serverless.service.custom.slack.service_deploy_message ||
     '`{{user}}` deployed service `{{service}}` to environment `{{stage}}`';
 
     const parsedMessage = SlackServerlessPlugin.parseMessage(message, this.messageVariables);
