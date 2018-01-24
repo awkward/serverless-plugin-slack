@@ -1,5 +1,5 @@
+/* eslint-disable no-undef */
 const SlackServerlessPlugin = require('../index');
-
 
 describe('serverless plugin slack', () => {
   test('it fails on absent config ', () => {
@@ -16,17 +16,17 @@ describe('serverless plugin slack', () => {
 
   describe('single function deployment', () => {
     test('it sends message', () => {
-      const config = { service: { custom: { slack: { user: 'jd', webhook_url: 'https://example.com' } } } };
-      const options = { functionObj: { handler: 'foo', name: 'bar' }, stage: 'stage' };
+      const config = { service: { service: 'foobar', custom: { slack: { user: 'jd', webhook_url: 'https://example.com' } } } };
+      const options = { f: 'bar', stage: 'staging' };
 
       const plugin = new SlackServerlessPlugin(config, options);
 
-      plugin.sendWebhook = jest.fn();
+      SlackServerlessPlugin.sendWebhook = jest.fn();
 
       plugin.afterDeployFunction();
 
-      expect(plugin.sendWebhook).toHaveBeenCalledWith({
-        body: '{"text":"jd deployed handler foo (bar) to environment stage"}',
+      expect(SlackServerlessPlugin.sendWebhook).toHaveBeenCalledWith({
+        body: '{"text":"`jd` deployed function `bar` to environment `staging` in service `foobar`"}',
         headers: { 'Content-type': 'application/json' },
         method: 'POST',
         url: 'https://example.com',
