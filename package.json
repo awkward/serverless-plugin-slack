@@ -1,0 +1,25 @@
+{
+  "name": "serverless-plugin-slack",
+  "version": "1.0.0",
+  "description": "Serverless Plugin Slack",
+  "main": "src/index.js",
+  "author": { "name": "Maarten van Vliet" },
+  "homepage": "https://github.com/awkward/serverless-plugin-slack",
+  "repository" : { "type" : "git"
+    , "url" : "https://github.com/awkward/serverless-plugin-slack.git"
+    },
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint . --ignore-path .gitignore",
+    "test": "jest --coverage"
+  },
+  "devDependencies": {
+    "eslint": "^4.13.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0",
+    "jest": "^21.2.1"
+  },
+  "dependencies": {
+    "request": "^2.83.0"
+  }
+}
