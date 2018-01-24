@@ -46,11 +46,12 @@ class SlackServerlessPlugin {
     };
   }
   static sendWebhook(options) {
-    return new Promise((resolve, reject) => {
-      request(options, (error, response) => {
-        if (!error && response.statusCode === 200) return reject(error);
-        return resolve(response);
-      });
+    request(options, (error, response) => {
+      if (!error && response.statusCode === 200) {
+        console.log('Notified slack of deployment');
+      } else {
+        console.log('Something went wrong notifying slack');
+      }
     });
   }
 
