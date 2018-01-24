@@ -33,4 +33,24 @@ describe('serverless plugin slack', () => {
       });
     });
   });
+
+  describe('service deployment', () => {
+    test('it sends message', () => {
+      const config = { service: { service: 'foobar', custom: { slack: { user: 'jd', webhook_url: 'https://example.com' } } } };
+      const options = { f: 'bar', stage: 'staging' };
+
+      const plugin = new SlackServerlessPlugin(config, options);
+
+      SlackServerlessPlugin.sendWebhook = jest.fn();
+
+      plugin.afterDeployService();
+
+      expect(SlackServerlessPlugin.sendWebhook).toHaveBeenCalledWith({
+        body: '{"text":"`jd` deployed service `foobar` to environment `staging`"}',
+        headers: { 'Content-type': 'application/json' },
+        method: 'POST',
+        url: 'https://example.com',
+      });
+    });
+  });
 });

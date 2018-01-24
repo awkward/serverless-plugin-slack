@@ -22,12 +22,25 @@ class SlackServerlessPlugin {
 
     this.hooks = {
       'after:deploy:function:deploy': this.afterDeployFunction.bind(this),
+      'after:deploy:deploy': this.afterDeployService.bind(this),
     };
   }
 
   afterDeployFunction() {
     const message = this.serverless.service.custom.slack.function_deploy_message ||
             '`{{user}}` deployed function `{{name}}` to environment `{{stage}}` in service `{{service}}`';
+
+    const parsedMessage = SlackServerlessPlugin.parseMessage(message, this.messageVariables);
+
+    const requestOptions = SlackServerlessPlugin
+      .buildRequestOptions(this.webhook_url, parsedMessage);
+
+    return SlackServerlessPlugin.sendWebhook(requestOptions);
+  }
+
+  afterDeployService() {
+    const message = this.serverless.service.custom.slack.function_deploy_message ||
+    '`{{user}}` deployed service `{{service}}` to environment `{{stage}}`';
 
     const parsedMessage = SlackServerlessPlugin.parseMessage(message, this.messageVariables);
 
