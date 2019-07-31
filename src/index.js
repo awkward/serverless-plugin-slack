@@ -18,7 +18,7 @@ class SlackServerlessPlugin {
       user: this.user,
       name: this.options.f,
       service: this.serverless.service.service,
-      stage: this.options.stage,
+      stage: this.options.stage || 'dev',
     };
 
     this.hooks = {
