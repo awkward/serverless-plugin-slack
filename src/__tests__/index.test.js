@@ -26,7 +26,7 @@ describe('serverless plugin slack', () => {
       plugin.afterDeployFunction();
 
       expect(SlackServerlessPlugin.sendWebhook).toHaveBeenCalledWith({
-        body: '{"text":"`jd` deployed function `bar` to environment `staging` in service `foobar`"}',
+        body: '{\"text\":\"`jd` deployed function `bar` to environment `staging` in service `foobar`\",\"username\":\"jd\",\"icon_emoji\":\":cloud:\"}',
         headers: { 'Content-type': 'application/json' },
         method: 'POST',
         url: 'https://example.com',
@@ -46,7 +46,7 @@ describe('serverless plugin slack', () => {
       plugin.afterDeployService();
 
       expect(SlackServerlessPlugin.sendWebhook).toHaveBeenCalledWith({
-        body: '{"text":"`jd` deployed service `foobar` to environment `staging`"}',
+        body: '{\"text\":\"`jd` deployed service `foobar` to environment `staging`\",\"username\":\"jd\",\"icon_emoji\":\":cloud:\"}',
         headers: { 'Content-type': 'application/json' },
         method: 'POST',
         url: 'https://example.com',

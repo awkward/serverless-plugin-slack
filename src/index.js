@@ -12,9 +12,10 @@ class SlackServerlessPlugin {
     if (!this.serverless.service.custom.slack.webhook_url) { throw new Error('No Slack webhook url set in config'); }
 
     this.webhook_url = this.serverless.service.custom.slack.webhook_url;
-
+    this.emoji = this.serverless.service.custom.slack.emoji || ':cloud:';
+    this.user = this.serverless.service.custom.slack.user || process.env.USER,
     this.messageVariables = {
-      user: this.serverless.service.custom.slack.user || process.env.USER,
+      user: this.user,
       name: this.options.f,
       service: this.serverless.service.service,
       stage: this.options.stage,
@@ -33,7 +34,7 @@ class SlackServerlessPlugin {
     const parsedMessage = SlackServerlessPlugin.parseMessage(message, this.messageVariables);
 
     const requestOptions = SlackServerlessPlugin
-      .buildRequestOptions(this.webhook_url, parsedMessage);
+      .buildRequestOptions(this.webhook_url, parsedMessage, this.user, this.emoji);
 
     return SlackServerlessPlugin.sendWebhook(requestOptions);
   }
@@ -45,17 +46,17 @@ class SlackServerlessPlugin {
     const parsedMessage = SlackServerlessPlugin.parseMessage(message, this.messageVariables);
 
     const requestOptions = SlackServerlessPlugin
-      .buildRequestOptions(this.webhook_url, parsedMessage);
+      .buildRequestOptions(this.webhook_url, parsedMessage, this.user, this.emoji);
 
     return SlackServerlessPlugin.sendWebhook(requestOptions);
   }
 
-  static buildRequestOptions(url, message) {
+  static buildRequestOptions(url, message, user, emoji) {
     return {
       url,
       method: 'POST',
       headers: { 'Content-type': 'application/json' },
-      body: JSON.stringify({ text: message }),
+      body: JSON.stringify({ text: message, username: user, icon_emoji: emoji }),
     };
   }
   static sendWebhook(options) {
