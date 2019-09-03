@@ -30,7 +30,7 @@ class SlackServerlessPlugin {
   afterDeployFunction() {
     const message = this.serverless.service.custom.slack.function_deploy_message ||
             '`{{user}}` deployed function `{{name}}` to environment `{{stage}}` in service `{{service}}`';
-
+    this.webhook_url = this.serverless.service.custom.slack.webhook_url;
     const parsedMessage = SlackServerlessPlugin.parseMessage(message, this.messageVariables);
 
     const requestOptions = SlackServerlessPlugin
@@ -42,7 +42,7 @@ class SlackServerlessPlugin {
   afterDeployService() {
     const message = this.serverless.service.custom.slack.service_deploy_message ||
     '`{{user}}` deployed service `{{service}}` to environment `{{stage}}`';
-
+    this.webhook_url = this.serverless.service.custom.slack.webhook_url;
     const parsedMessage = SlackServerlessPlugin.parseMessage(message, this.messageVariables);
 
     const requestOptions = SlackServerlessPlugin
@@ -64,6 +64,7 @@ class SlackServerlessPlugin {
       if (!error && response.statusCode === 200) {
         console.log('Notified slack of deployment');
       } else {
+        console.log(options);
         console.log('Something went wrong notifying slack');
       }
     });
