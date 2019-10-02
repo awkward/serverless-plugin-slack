@@ -14,6 +14,24 @@ describe('serverless plugin slack', () => {
     expect(() => { new SlackServerlessPlugin(config); }).toThrow('No Slack webhook url set in config');
   });
 
+  test('sends an emoji when defined', () => {
+      const config = { service: { service: 'foobar', custom: { slack: { emoji: ':cloud:', user: 'jd', webhook_url: 'https://example.com' } } } };
+      const options = { f: 'bar', stage: 'staging' };
+
+      const plugin = new SlackServerlessPlugin(config, options);
+
+      SlackServerlessPlugin.sendWebhook = jest.fn();
+
+      plugin.afterDeployService();
+
+      expect(SlackServerlessPlugin.sendWebhook).toHaveBeenCalledWith({
+        body: '{\"text\":\"`jd` deployed service `foobar` to environment `staging`\",\"username\":\"jd\",\"icon_emoji\":\":cloud:\"}',
+        headers: { 'Content-type': 'application/json' },
+        method: 'POST',
+        url: 'https://example.com',
+      });
+  });
+
   describe("reportable", () => {
     test("does not report to non-reportable environments", () => {
       const slack = {
@@ -48,7 +66,7 @@ describe('serverless plugin slack', () => {
       plugin.afterDeployFunction();
 
       expect(SlackServerlessPlugin.sendWebhook).toHaveBeenCalledWith({
-        body: '{\"text\":\"`jd` deployed function `bar` to environment `staging` in service `foobar`\",\"username\":\"jd\",\"icon_emoji\":\":cloud:\"}',
+        body: '{\"text\":\"`jd` deployed function `bar` to environment `staging` in service `foobar`\",\"username\":\"jd\"}',
         headers: { 'Content-type': 'application/json' },
         method: 'POST',
         url: 'https://example.com',
@@ -68,7 +86,7 @@ describe('serverless plugin slack', () => {
       plugin.afterDeployService();
 
       expect(SlackServerlessPlugin.sendWebhook).toHaveBeenCalledWith({
-        body: '{\"text\":\"`jd` deployed service `foobar` to environment `staging`\",\"username\":\"jd\",\"icon_emoji\":\":cloud:\"}',
+        body: '{\"text\":\"`jd` deployed service `foobar` to environment `staging`\",\"username\":\"jd\"}',
         headers: { 'Content-type': 'application/json' },
         method: 'POST',
         url: 'https://example.com',
@@ -88,7 +106,7 @@ describe('serverless plugin slack', () => {
       plugin.afterDeployService();
 
       expect(SlackServerlessPlugin.sendWebhook).toHaveBeenCalledWith({
-        body: '{\"text\":\"`jd` deployed service `foobar` to environment `dev`\",\"username\":\"jd\",\"icon_emoji\":\":cloud:\"}',
+        body: '{\"text\":\"`jd` deployed service `foobar` to environment `dev`\",\"username\":\"jd\"}',
         headers: { 'Content-type': 'application/json' },
         method: 'POST',
         url: 'https://example.com',

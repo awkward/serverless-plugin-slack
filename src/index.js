@@ -15,7 +15,7 @@ class SlackServerlessPlugin {
     this.reportableStages = reportable.stages;
 
     this.webhook_url = this.serverless.service.custom.slack.webhook_url;
-    this.emoji = this.serverless.service.custom.slack.emoji || ':cloud:';
+    this.emoji = this.serverless.service.custom.slack.emoji;
     this.user = this.serverless.service.custom.slack.user || process.env.USER;
     this.stage = this.options.stage || 'dev';
     this.messageVariables = {
@@ -64,11 +64,20 @@ class SlackServerlessPlugin {
   }
 
   static buildRequestOptions(url, message, user, emoji) {
+    let body = {
+      text: message, 
+      username: user, 
+    }
+
+    if (emoji) {
+      body.icon_emoji = emoji
+    }
+
     return {
       url,
       method: 'POST',
       headers: { 'Content-type': 'application/json' },
-      body: JSON.stringify({ text: message, username: user, icon_emoji: emoji }),
+      body: JSON.stringify(body),
     };
   }
   static sendWebhook(options) {
