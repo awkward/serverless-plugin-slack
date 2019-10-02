@@ -14,6 +14,28 @@ describe('serverless plugin slack', () => {
     expect(() => { new SlackServerlessPlugin(config); }).toThrow('No Slack webhook url set in config');
   });
 
+  describe("reportable", () => {
+    test("does not report to non-reportable environments", () => {
+      const slack = {
+        user: 'jd',
+        webhook_url: 'some-uri',
+        reportable: {
+          stages: ['dev']
+        }
+      };
+      const config = { service: { service: 'foobar', custom: { slack } } };
+      const options = { f: 'bar', stage: 'ci' };
+
+      const plugin = new SlackServerlessPlugin(config, options);
+
+      SlackServerlessPlugin.sendWebhook = jest.fn();
+
+      plugin.afterDeployFunction();
+
+      expect(SlackServerlessPlugin.sendWebhook).not.toHaveBeenCalledWith();
+    });
+  });
+
   describe('single function deployment', () => {
     test('it sends message', () => {
       const config = { service: { service: 'foobar', custom: { slack: { user: 'jd', webhook_url: 'https://example.com' } } } };

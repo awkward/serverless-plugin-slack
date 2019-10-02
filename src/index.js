@@ -11,14 +11,18 @@ class SlackServerlessPlugin {
 
     if (!this.serverless.service.custom.slack.webhook_url) { throw new Error('No Slack webhook url set in config'); }
 
+    const reportable = this.serverless.service.custom.slack.reportable || {};
+    this.reportableStages = reportable.stages;
+
     this.webhook_url = this.serverless.service.custom.slack.webhook_url;
     this.emoji = this.serverless.service.custom.slack.emoji || ':cloud:';
-    this.user = this.serverless.service.custom.slack.user || process.env.USER,
+    this.user = this.serverless.service.custom.slack.user || process.env.USER;
+    this.stage = this.options.stage || 'dev';
     this.messageVariables = {
       user: this.user,
       name: this.options.f,
       service: this.serverless.service.service,
-      stage: this.options.stage || 'dev',
+      stage: this.stage,
     };
 
     this.hooks = {
@@ -28,6 +32,10 @@ class SlackServerlessPlugin {
   }
 
   afterDeployFunction() {
+    if (this.reportableStages && !this.reportableStages.includes(this.stage)) {
+      return
+    }
+
     const message = this.serverless.service.custom.slack.function_deploy_message ||
             '`{{user}}` deployed function `{{name}}` to environment `{{stage}}` in service `{{service}}`';
     this.webhook_url = this.serverless.service.custom.slack.webhook_url;
@@ -40,6 +48,10 @@ class SlackServerlessPlugin {
   }
 
   afterDeployService() {
+    if (this.reportableStages && !this.reportableStages.includes(this.stage)) {
+      return
+    }
+
     const message = this.serverless.service.custom.slack.service_deploy_message ||
     '`{{user}}` deployed service `{{service}}` to environment `{{stage}}`';
     this.webhook_url = this.serverless.service.custom.slack.webhook_url;

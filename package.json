@@ -1,12 +1,16 @@
 {
   "name": "serverless-plugin-slack",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Serverless Plugin Slack",
   "main": "src/index.js",
   "author": { "name": "Maarten van Vliet" },
+  "contributors": [
+    "Quinn Neumiiller"
+  ],
   "homepage": "https://github.com/awkward/serverless-plugin-slack",
-  "repository" : { "type" : "git"
-    , "url" : "https://github.com/awkward/serverless-plugin-slack.git"
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/quinnjn/serverless-plugin-slack.git"
     },
   "license": "MIT",
   "scripts": {
