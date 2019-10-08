@@ -16,7 +16,7 @@ class SlackServerlessPlugin {
 
     this.webhook_url = this.serverless.service.custom.slack.webhook_url;
     this.emoji = this.serverless.service.custom.slack.emoji;
-    this.user = this.serverless.service.custom.slack.user || process.env.USER;
+    this.user = this.serverless.service.custom.slack.user || process.env.DEPLOYER || process.env.USER;
     this.stage = this.options.stage || 'dev';
     this.messageVariables = {
       user: this.user,

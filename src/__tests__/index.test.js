@@ -113,4 +113,25 @@ describe('serverless plugin slack', () => {
       });
     });
   });
+
+  describe('user', () => {
+    test("Can set the user from process.env.DEPLOYER", () => {
+      process.env.DEPLOYER = "imadeployer";
+      const config = { service: { service: 'foobar', custom: { slack: { webhook_url: 'https://example.com' } } } };
+      const options = { f: 'bar' };
+
+      const plugin = new SlackServerlessPlugin(config, options);
+
+      SlackServerlessPlugin.sendWebhook = jest.fn();
+
+      plugin.afterDeployService();
+
+      expect(SlackServerlessPlugin.sendWebhook).toHaveBeenCalledWith({
+        body: '{\"text\":\"`imadeployer` deployed service `foobar` to environment `dev`\",\"username\":\"imadeployer\"}',
+        headers: { 'Content-type': 'application/json' },
+        method: 'POST',
+        url: 'https://example.com',
+      });
+    });
+  });
 });
