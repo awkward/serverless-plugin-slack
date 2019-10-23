@@ -19,6 +19,7 @@ class SlackServerlessPlugin {
     this.user = this.serverless.service.custom.slack.user || process.env.DEPLOYER || process.env.USER;
     this.stage = this.options.stage || 'dev';
     this.messageVariables = {
+      ...process.env,
       user: this.user,
       name: this.options.f,
       service: this.serverless.service.service,

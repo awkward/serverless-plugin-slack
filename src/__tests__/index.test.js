@@ -114,7 +114,40 @@ describe('serverless plugin slack', () => {
     });
   });
 
-  describe('user', () => {
+  describe('environment variables', () => {
+    test('Uses process.env.GIT_SHA in the message', () => {
+      process.env.GIT_SHA = 'deadbeef';
+
+      const config = {
+        service: {
+          service: 'foobar',
+          custom: {
+            slack: {
+              service_deploy_message: 'git sha: {{GIT_SHA}}',
+              webhook_url: 'https://example.com',
+            },
+          },
+        },
+      };
+      const options = { f: 'bar' };
+
+      const plugin = new SlackServerlessPlugin(config, options);
+
+      SlackServerlessPlugin.sendWebhook = jest.fn();
+
+      plugin.afterDeployService();
+
+      expect(SlackServerlessPlugin.sendWebhook).toHaveBeenCalledWith({
+        body: JSON.stringify({
+          text: 'git sha: deadbeef',
+          username: 'admin',
+        }),
+        headers: { 'Content-type': 'application/json' },
+        method: 'POST',
+        url: 'https://example.com',
+      });
+    });
+
     test("Can set the user from process.env.DEPLOYER", () => {
       process.env.DEPLOYER = "imadeployer";
       const config = { service: { service: 'foobar', custom: { slack: { webhook_url: 'https://example.com' } } } };
