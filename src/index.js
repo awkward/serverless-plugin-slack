@@ -6,25 +6,9 @@ class SlackServerlessPlugin {
     this.serverless = serverless;
     this.options = options;
 
-
     if (!this.serverless.service.custom.slack) { throw new Error('No Slack options set in config'); }
 
     if (!this.serverless.service.custom.slack.webhook_url) { throw new Error('No Slack webhook url set in config'); }
-
-    const reportable = this.serverless.service.custom.slack.reportable || {};
-    this.reportableStages = reportable.stages;
-
-    this.webhook_url = this.serverless.service.custom.slack.webhook_url;
-    this.emoji = this.serverless.service.custom.slack.emoji;
-    this.user = this.serverless.service.custom.slack.user || process.env.DEPLOYER || process.env.USER;
-    this.stage = this.options.stage || 'dev';
-    this.messageVariables = {
-      ...process.env,
-      user: this.user,
-      name: this.options.f,
-      service: this.serverless.service.service,
-      stage: this.stage,
-    };
 
     this.hooks = {
       'after:deploy:function:deploy': this.afterDeployFunction.bind(this),
@@ -32,7 +16,25 @@ class SlackServerlessPlugin {
     };
   }
 
+  refreshVariables() {
+    const reportable = this.serverless.service.custom.slack.reportable || {};
+    this.reportableStages = reportable.stages;
+    this.webhook_url = this.serverless.service.custom.slack.webhook_url;
+    this.emoji = this.serverless.service.custom.slack.emoji;
+    this.stage = this.options.stage || 'dev';
+    this.user = this.serverless.service.custom.slack.user || process.env.DEPLOYER || process.env.USER;
+    this.messageVariables = {
+      ...process.env,
+      user: this.user,
+      name: this.options.f,
+      service: this.serverless.service.service,
+      stage: this.stage,
+    };
+  }
+
   afterDeployFunction() {
+    this.refreshVariables();
+
     if (this.reportableStages && !this.reportableStages.includes(this.stage)) {
       return
     }
@@ -49,6 +51,8 @@ class SlackServerlessPlugin {
   }
 
   afterDeployService() {
+    this.refreshVariables();
+
     if (this.reportableStages && !this.reportableStages.includes(this.stage)) {
       return
     }
